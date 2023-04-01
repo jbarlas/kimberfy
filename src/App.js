@@ -4,13 +4,13 @@ import "./App.css";
 import { redirectToAuthCodeFlow } from "./utils";
 
 function App() {
-  const spotifyClientId = process.env.CLIENT_ID;
+  // const spotifyClientId = process.env.CLIENT_ID;
   const params = new URLSearchParams(window.location.search);
   const [spotifyCode, setSpotifyCode] = React.useState(params.get("code"));
   const CLIENT_ID = "75498bd4f8ca4d408edb2798545d5840";
-  const REDIRECT_URI = "localhost:3000/redirect";
-  const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
-  const RESPONSE_TYPE = "token";
+  // const REDIRECT_URI = "https://kimberfy.web.app/";
+  // const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
+  // const RESPONSE_TYPE = "token";
 
   // React.useEffect(() => {
   //   const hash = window.location.hash;

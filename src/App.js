@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@mui/material";
 import "./App.css";
-import { redirectToAuthCodeFlow } from "./utils";
+import { fetchProfile, redirectToAuthCodeFlow } from "./utils";
 
 function App() {
   // const spotifyClientId = process.env.CLIENT_ID;
@@ -45,6 +45,7 @@ function App() {
           Spotify Login
         </Button>
         <Button onClick={() => console.log(spotifyCode)}>Check code</Button>
+        <Button onClick={() => console.log(fetchProfile(spotifyCode))}></Button>
         <Button variant="contained" onClick={logout}>
           Spotify Logout
         </Button>

@@ -1,12 +1,13 @@
 import React from "react";
 import { Button } from "@mui/material";
 import "./App.css";
-import { fetchProfile, redirectToAuthCodeFlow } from "./utils";
+import { fetchProfile, getAccessToken, redirectToAuthCodeFlow } from "./utils";
 
 function App() {
   // const spotifyClientId = process.env.CLIENT_ID;
   const params = new URLSearchParams(window.location.search);
   const [spotifyCode, setSpotifyCode] = React.useState(params.get("code"));
+  const [profileData, setProfileData] = React.useState();
   const CLIENT_ID = "75498bd4f8ca4d408edb2798545d5840";
   // const REDIRECT_URI = "https://kimberfy.web.app/";
   // const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
@@ -30,10 +31,17 @@ function App() {
   //   setSpotifyCode(token);
   // }, []);
 
+  const getProfileData = async () => {
+    const accessToken = await getAccessToken(CLIENT_ID, spotifyCode);
+    const profile = await fetchProfile(accessToken);
+    setProfileData(profile);
+  };
+
   const logout = () => {
     setSpotifyCode("");
     window.localStorage.removeItem("code");
   };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -45,11 +53,12 @@ function App() {
           Spotify Login
         </Button>
         <Button onClick={() => console.log(spotifyCode)}>Check code</Button>
-        <Button onClick={() => console.log(fetchProfile(spotifyCode))}></Button>
+        <Button onClick={getProfileData}>Get Profile Data</Button>
         <Button variant="contained" onClick={logout}>
           Spotify Logout
         </Button>
       </header>
+      {profileData && <div>{profileData.href}</div>}
     </div>
   );
 }

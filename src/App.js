@@ -1,64 +1,14 @@
 import React from "react";
-import { Button } from "@mui/material";
 import "./App.css";
-import { fetchProfile, getAccessToken, redirectToAuthCodeFlow } from "./utils";
+import { Outlet } from "react-router-dom";
 
 function App() {
-  // const spotifyClientId = process.env.CLIENT_ID;
-  const params = new URLSearchParams(window.location.search);
-  const [spotifyCode, setSpotifyCode] = React.useState(params.get("code"));
-  const [profileData, setProfileData] = React.useState();
-  const CLIENT_ID = "75498bd4f8ca4d408edb2798545d5840";
-  // const REDIRECT_URI = "https://kimberfy.web.app/";
-  // const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
-  // const RESPONSE_TYPE = "token";
-
-  // React.useEffect(() => {
-  //   const hash = window.location.hash;
-  //   let token = window.localStorage.getItem("token");
-
-  //   if (!token && hash) {
-  //     token = hash
-  //       .substring(1)
-  //       .split("&")
-  //       .find((elem) => elem.startsWith("access_token"))
-  //       .split("=")[1];
-
-  //     window.location.hash = "";
-  //     window.localStorage.setItem("token", token);
-  //   }
-
-  //   setSpotifyCode(token);
-  // }, []);
-
-  const getProfileData = async () => {
-    const accessToken = await getAccessToken(CLIENT_ID, spotifyCode);
-    const profile = await fetchProfile(accessToken);
-    setProfileData(profile);
-  };
-
-  const logout = () => {
-    setSpotifyCode("");
-    window.localStorage.removeItem("code");
-  };
-
   return (
-    <div className="App">
+    <div>
       <header className="App-header">
         Testing
-        <Button
-          variant="contained"
-          onClick={() => redirectToAuthCodeFlow(CLIENT_ID)}
-        >
-          Spotify Login
-        </Button>
-        <Button onClick={() => console.log(spotifyCode)}>Check code</Button>
-        <Button onClick={getProfileData}>Get Profile Data</Button>
-        <Button variant="contained" onClick={logout}>
-          Spotify Logout
-        </Button>
+        <Outlet />
       </header>
-      {profileData && <div>{profileData.href}</div>}
     </div>
   );
 }

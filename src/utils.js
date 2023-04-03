@@ -1,5 +1,8 @@
 import pkceChallenge from "pkce-challenge";
 
+const dev = "http://localhost:3000"
+// const prod = "https://kimberfy.web.app"
+
 export async function redirectToAuthCodeFlow(clientId) {
   const pkce = pkceChallenge(128);
   const verifier = pkce.code_verifier;
@@ -10,7 +13,7 @@ export async function redirectToAuthCodeFlow(clientId) {
   const params = new URLSearchParams();
   params.append("client_id", clientId);
   params.append("response_type", "code");
-  params.append("redirect_uri", "https://kimberfy.web.app/redirect");
+  params.append("redirect_uri", dev + "/redirect");
   params.append(
     "scope",
     "user-read-private user-read-email user-read-currently-playing"
@@ -28,7 +31,7 @@ export async function getAccessToken(clientId, code) {
   params.append("client_id", clientId);
   params.append("grant_type", "authorization_code");
   params.append("code", code);
-  params.append("redirect_uri", "https://kimberfy.web.app/redirect");
+  params.append("redirect_uri", dev + "/redirect");
   params.append("code_verifier", verifier);
 
   return await fetch("https://accounts.spotify.com/api/token", {

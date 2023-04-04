@@ -1,7 +1,7 @@
 import { Button, Typography } from "@mui/material";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
-import Player from "../player/Player";
+import Player from "../../player/Player";
 import { generateRecommendations, getCurrentlyPlaying } from "../../utils";
 
 export default function Explore() {

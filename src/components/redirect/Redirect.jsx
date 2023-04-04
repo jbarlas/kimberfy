@@ -12,7 +12,7 @@ export default function Redirect() {
     getAccessToken(CLIENT_ID, code)
       .then((token) => {
         localStorage.setItem("accessToken", token);
-        navigate("/profile");
+        navigate("/explore");
       })
       .catch((e) => console.log("error", e));
   }, [navigate]);

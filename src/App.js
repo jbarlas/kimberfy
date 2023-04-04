@@ -12,7 +12,6 @@ function App() {
   const accessToken = localStorage.getItem("accessToken");
   return (
     <div>
-      <header className="App-header">
         <Outlet />
         {accessToken && (
           <Paper
@@ -29,20 +28,19 @@ function App() {
               sx={{ bgcolor: "#D4C2FC"}}
             >
               <BottomNavigationAction
-                label="Shared"
-                value="profile"
-                icon={<LibraryMusic />}
+                label="Explore"
+                value="explore"
+                icon={<Group />}
               />
               <BottomNavigationAction
                 label="Send"
                 value="send"
                 icon={<Send />}
               />
-              <BottomNavigationAction label="Profile" icon={<Group />} />
+              <BottomNavigationAction label="Shared" value="shared" icon={<LibraryMusic />} />
             </BottomNavigation>
           </Paper>
         )}
-      </header>
     </div>
   );
 }

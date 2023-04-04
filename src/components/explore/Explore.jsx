@@ -1,18 +1,19 @@
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
+import Player from "../../player/Player";
 import { generateRecommendations, getCurrentlyPlaying } from "../../utils";
 
-export default function Profile() {
-  const data = useLoaderData();
+export default function Explore() {
+  const {devices, profile} = useLoaderData();
   const token = localStorage.getItem("accessToken");
   const [songs, setSongs] = React.useState([]);
   const [recs, setRecs] = React.useState([]);
 
-  console.log(recs);
+  console.log(devices, profile);
   return (
-    <div>
-      <div>profile: {data.display_name}</div>
+    <div style={{ display: "flex", flexDirection: "column", margin: "20px 10px", }}>
+      <Typography variant="h4">Welcome, {profile.display_name}!</Typography>
       <div
         style={{
           display: "flex",
@@ -24,24 +25,22 @@ export default function Profile() {
         <Button
           variant="contained"
           onClick={() =>
-            getCurrentlyPlaying(token).then((songData) =>
-              setSongs([songData, ...songs])
-            )
-          }
-        >
-          Add Currently Playing
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() =>
             generateRecommendations(
               token,
               songs.map((song) => song.item.id)
-            ).then((resp) => resp ? setRecs(resp.tracks) : null)
+            ).then((resp) => (resp ? setRecs(resp.tracks) : null))
           }
         >
           Generate Recommendations
         </Button>
+        <Button
+          onClick={() =>
+            getCurrentlyPlaying(token).then((song) => song ? setSongs([...songs, song]) : console.log("no song playing"))
+          }
+        >
+          Add Currently Playing
+        </Button>
+        <Player song={recs ? recs[0] : null} devices={devices}/>
       </div>
       <div
         style={{
@@ -53,13 +52,13 @@ export default function Profile() {
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
           SEED
-          {songs.map((song) => {
+          {songs && songs.map((song) => {
             return <div key={song.item.id}>{song.item.name}</div>;
           })}
         </div>
         <div>
           Recommendations
-          {recs.map((song) => {
+          {recs && recs.map((song) => {
             return <div key={song.id}>{song.name}</div>;
           })}
         </div>

@@ -23,7 +23,7 @@ import { Pause, PlayArrow, SkipNext, SkipPrevious } from "@mui/icons-material";
 import { sendSong } from "../../firebase";
 
 export default function Send() {
-  const { currentlyPlaying, devices, profile } = useLoaderData();
+  const { currentlyPlaying, devices } = useLoaderData();
   const token = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("firebaseUserID");
   const [songPlaying, setSongPlaying] = React.useState(currentlyPlaying);

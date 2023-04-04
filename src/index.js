@@ -111,9 +111,11 @@ const router = createBrowserRouter(
           element: <Explore />,
           loader: async () => {
             const accessToken = localStorage.getItem("accessToken");
-            const devices = await getDevices(accessToken).then(device => device);
-            const profile = await fetchProfile(accessToken)
-            return { devices, profile }
+            const devices = await getDevices(accessToken).then(
+              (device) => device
+            );
+            const profile = await fetchProfile(accessToken);
+            return { devices, profile };
           },
         },
         {
@@ -121,20 +123,32 @@ const router = createBrowserRouter(
           element: <Send />,
           loader: async () => {
             const accessToken = localStorage.getItem("accessToken");
-            const devices = await getDevices(accessToken).then(device => device);
+            const devices = await getDevices(accessToken).then(
+              (device) => device
+            );
+            const profile = await fetchProfile(accessToken);
             const currentlyPlaying = await getCurrentlyPlaying(accessToken)
               .then((token) => token)
               .catch((err) => {
                 console.log("error", err);
                 localStorage.clear();
               });
-            return { currentlyPlaying, devices }
+            return { currentlyPlaying, devices, profile };
           },
         },
         {
           path: "shared",
-          element: <Shared />
-        }
+          element: <Shared />,
+          loader: async () => {
+            const accessToken = localStorage.getItem("accessToken");
+            const currentlyPlaying = await getCurrentlyPlaying(accessToken)
+              .then((token) => token)
+              .catch((err) => {
+                console.log("error", err);
+              });
+            return { currentlyPlaying };
+          },
+        },
       ],
     },
   ],

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -7,6 +8,7 @@ import {
   CardContent,
   CardMedia,
   IconButton,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import { useLoaderData, useNavigate } from "react-router-dom";
@@ -18,44 +20,39 @@ import {
   previousPlayback,
 } from "../../utils";
 import { Pause, PlayArrow, SkipNext, SkipPrevious } from "@mui/icons-material";
+import { sendSong } from "../../firebase";
 
 export default function Send() {
-  const { currentlyPlaying, devices } = useLoaderData();
+  const { currentlyPlaying, devices, profile } = useLoaderData();
   const token = localStorage.getItem("accessToken");
+  const userId = localStorage.getItem("firebaseUserID");
   const [songPlaying, setSongPlaying] = React.useState(currentlyPlaying);
-  // const [currentDevices, setCurrentDevices] = React.useState(devices);
+  const device = Object.values(devices.devices).filter(
+    (device) => device.is_active
+  )[0];
+  const [songSent, setSongSent] = React.useState(false);
   const navigate = useNavigate();
 
-  console.log(songPlaying);
-
   const pause = () => {
-    pausePlayback(
-      token,
-      Object.values(devices.devices).filter((device) => device.is_active)[0].id
-    ).then(() => setSongPlaying({ ...songPlaying, is_playing: false }));
+    pausePlayback(token, device.id).then(() =>
+      setSongPlaying({ ...songPlaying, is_playing: false })
+    );
   };
 
   const play = () => {
-    playPlayback(
-      token,
-      Object.values(devices.devices).filter((device) => device.is_active)[0].id
-    ).then(() => setSongPlaying({ ...songPlaying, is_playing: true }));
+    playPlayback(token, device.id).then(() =>
+      setSongPlaying({ ...songPlaying, is_playing: true })
+    );
   };
 
   const next = () => {
-    nextPlayback(
-      token,
-      Object.values(devices.devices).filter((device) => device.is_active)[0].id
-    ).then(() =>
+    nextPlayback(token, device.id).then(() =>
       getCurrentlyPlaying(token).then((newSong) => setSongPlaying(newSong))
     );
   };
 
   const previous = () => {
-    previousPlayback(
-      token,
-      Object.values(devices.devices).filter((device) => device.is_active)[0].id
-    ).then(() =>
+    previousPlayback(token, device.id).then(() =>
       getCurrentlyPlaying(token).then((newSong) => setSongPlaying(newSong))
     );
   };
@@ -69,7 +66,7 @@ export default function Send() {
         height: "100vh",
       }}
     >
-      {songPlaying ? (
+      {songPlaying && device ? (
         <Card sx={{ maxWidth: "300px" }}>
           <CardMedia
             component="img"
@@ -117,17 +114,32 @@ export default function Send() {
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => console.log("sharing song!")}
+              onClick={() =>
+                sendSong(userId, songPlaying.item.id)
+                  .then((_) => setSongSent(true))
+                  .catch((error) => console.log("error sending song", error))
+              }
             >
               Send
             </Button>
           </CardActions>
         </Card>
       ) : (
-        <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 20, textAlign: "center"}}>
-            <Typography variant="h4">Oops! Looks like Spotify is closed /:</Typography>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 20,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h4">
+            Oops! Looks like Spotify is closed /:
+          </Typography>
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={() =>
               getCurrentlyPlaying(token)
                 .then((songData) => setSongPlaying(songData))
@@ -140,8 +152,30 @@ export default function Send() {
           >
             Try Again
           </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => window.open("https://play.spotify.com")}
+          >
+            Open Spotify
+          </Button>
         </div>
       )}
+      <Snackbar
+        open={songSent}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        onClose={() => setSongSent(false)}
+        sx={{marginBottom: 10}}
+      >
+        <Alert
+          onClose={() => setSongSent(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Song sent!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

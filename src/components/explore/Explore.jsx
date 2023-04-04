@@ -1,6 +1,7 @@
 import { Button, Typography } from "@mui/material";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
+import { firebaseSignIn } from "../../firebase";
 import Player from "../../player/Player";
 import { generateRecommendations, getCurrentlyPlaying } from "../../utils";
 

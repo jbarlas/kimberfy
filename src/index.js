@@ -4,7 +4,6 @@ import {
   createBrowserRouter,
   isRouteErrorResponse,
   RouterProvider,
-  useNavigate,
   useRouteError,
 } from "react-router-dom";
 import "./index.css";

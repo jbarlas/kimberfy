@@ -23,7 +23,7 @@ export default function Send() {
   const { currentlyPlaying, devices } = useLoaderData();
   const token = localStorage.getItem("accessToken");
   const [songPlaying, setSongPlaying] = React.useState(currentlyPlaying);
-  const [currentDevices, setCurrentDevices] = React.useState(devices);
+  // const [currentDevices, setCurrentDevices] = React.useState(devices);
   const navigate = useNavigate();
 
   console.log(songPlaying);
@@ -124,7 +124,7 @@ export default function Send() {
           </CardActions>
         </Card>
       ) : (
-        <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 20}}>
+        <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 20, textAlign: "center"}}>
             <Typography variant="h4">Oops! Looks like Spotify is closed /:</Typography>
           <Button
             variant="contained"

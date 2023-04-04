@@ -11,32 +11,13 @@ export default function Login() {
   // const REDIRECT_URI = "https://kimberfy.web.app/";
   // const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 
-  const login = () => {
-    redirectToAuthCodeFlow(CLIENT_ID);
-  };
 
-//   const logout = () => {
-//     setSpotifyCode("");
-//     window.localStorage.removeItem("code");
-//   };
+
   return (
-    <div>
-      <Button variant="contained" onClick={login} color="success">
+    <div style={{display: "flex", justifyContent: "center", alignItems: "center", height: "100vh"}}>
+      <Button variant="contained" onClick={() => redirectToAuthCodeFlow(CLIENT_ID)} color="success">
         Log in with Spotify
       </Button>
-      {/* <Button onClick={() => console.log(spotifyCode)}>Check code</Button>
-      <Button
-        onClick={() =>
-          getAccessToken(CLIENT_ID, spotifyCode).then((accessToken) =>
-            localStorage.setItem("accessToken", accessToken)
-          )
-        }
-      >
-        Get Access Token
-      </Button>
-      <Button variant="contained" onClick={logout}>
-        Spotify Logout
-      </Button> */}
     </div>
   );
 }

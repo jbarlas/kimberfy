@@ -15,7 +15,7 @@ function App() {
         <Outlet />
         {accessToken && (
           <Paper
-            sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+            sx={{ position: "fixed", bottom: 0, left: 0, right: 0}}
             elevation={3}
           >
             <BottomNavigation
@@ -25,7 +25,7 @@ function App() {
                 setActiveRoute(newValue);
                 navigate(newValue);
               }}
-              sx={{ bgcolor: "#D4C2FC"}}
+              sx={{ bgcolor: "#D4C2FC", paddingBottom: 2}}
             >
               <BottomNavigationAction
                 label="Explore"

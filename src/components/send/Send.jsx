@@ -73,6 +73,7 @@ export default function Send() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        height: "100vh"
       }}
     >
       {songPlaying && device ? (

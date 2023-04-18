@@ -5,14 +5,16 @@ import Player from "../../player/Player";
 import { generateRecommendations, getCurrentlyPlaying } from "../../utils";
 
 export default function Explore() {
-  const {devices, profile} = useLoaderData();
+  const { devices, profile } = useLoaderData();
   const token = localStorage.getItem("accessToken");
   const [songs, setSongs] = React.useState([]);
   const [recs, setRecs] = React.useState([]);
 
   console.log(devices, profile);
   return (
-    <div style={{ display: "flex", flexDirection: "column", margin: "20px 10px", }}>
+    <div
+      style={{ display: "flex", flexDirection: "column", margin: "20px 10px" }}
+    >
       <Typography variant="h4">Welcome, {profile.display_name}!</Typography>
       <div
         style={{
@@ -20,6 +22,7 @@ export default function Explore() {
           flexDirection: "column",
           margin: "10px",
           gap: "5px",
+          paddingBottom: "100px",
         }}
       >
         <Button
@@ -35,12 +38,14 @@ export default function Explore() {
         </Button>
         <Button
           onClick={() =>
-            getCurrentlyPlaying(token).then((song) => song ? setSongs([...songs, song]) : console.log("no song playing"))
+            getCurrentlyPlaying(token).then((song) =>
+              song ? setSongs([...songs, song]) : console.log("no song playing")
+            )
           }
         >
           Add Currently Playing
         </Button>
-        <Player song={recs ? recs[0] : null} devices={devices}/>
+        <Player song={recs ? recs[0] : null} devices={devices} />
       </div>
       <div
         style={{
@@ -52,15 +57,17 @@ export default function Explore() {
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
           SEED
-          {songs && songs.map((song) => {
-            return <div key={song.item.id}>{song.item.name}</div>;
-          })}
+          {songs &&
+            songs.map((song) => {
+              return <div key={song.item.id}>{song.item.name}</div>;
+            })}
         </div>
         <div>
           Recommendations
-          {recs && recs.map((song) => {
-            return <div key={song.id}>{song.name}</div>;
-          })}
+          {recs &&
+            recs.map((song) => {
+              return <div key={song.id}>{song.name}</div>;
+            })}
         </div>
       </div>
     </div>

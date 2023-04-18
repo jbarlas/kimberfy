@@ -14,6 +14,7 @@ import {
 import { useLoaderData, useNavigate } from "react-router-dom";
 import {
   getCurrentlyPlaying,
+  getDevices,
   nextPlayback,
   pausePlayback,
   playPlayback,
@@ -27,35 +28,44 @@ export default function Send() {
   const token = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("firebaseUserID");
   const [songPlaying, setSongPlaying] = React.useState(currentlyPlaying);
-  const device = Object.values(devices.devices).filter(
-    (device) => device.is_active
-  )[0];
+  const [device, setDevice] = React.useState(
+    Object.values(devices.devices).filter((device) => device.is_active)[0]
+  );
   const [songSent, setSongSent] = React.useState(false);
   const navigate = useNavigate();
+  console.log(songPlaying, device);
 
   const pause = () => {
     pausePlayback(token, device.id).then(() =>
-      setSongPlaying({ ...songPlaying, is_playing: false })
+      getCurrentlyPlaying(token).then((newSong) => setSongPlaying(newSong))
     );
   };
 
   const play = () => {
-    playPlayback(token, device.id).then(() =>
-      setSongPlaying({ ...songPlaying, is_playing: true })
-    );
+    playPlayback(token, device.id).then(() => playSong());
   };
 
   const next = () => {
-    nextPlayback(token, device.id).then(() =>
-      getCurrentlyPlaying(token).then((newSong) => setSongPlaying(newSong))
-    );
+    nextPlayback(token, device.id).then(() => playSong());
   };
 
   const previous = () => {
-    previousPlayback(token, device.id).then(() =>
-      getCurrentlyPlaying(token).then((newSong) => setSongPlaying(newSong))
-    );
+    previousPlayback(token, device.id).then(() => playSong());
   };
+
+  const playSong = () => {
+    getCurrentlyPlaying(token).then((newSong) => setSongPlaying(newSong));
+  };
+
+  React.useEffect(() => {
+    if (songPlaying) {
+      if (songPlaying.is_playing) {
+        setTimeout(() => {
+          getCurrentlyPlaying(token).then((newSong) => setSongPlaying(newSong));
+        }, songPlaying.item.duration_ms - songPlaying.progress_ms);
+      }
+    }
+  }, [songPlaying, token]);
 
   return (
     <div
@@ -115,7 +125,7 @@ export default function Send() {
               variant="contained"
               color="secondary"
               onClick={() =>
-                sendSong(userId, songPlaying.item.id)
+                sendSong(userId, songPlaying.item)
                   .then((_) => setSongSent(true))
                   .catch((error) => console.log("error sending song", error))
               }
@@ -140,15 +150,23 @@ export default function Send() {
           </Typography>
           <Button
             variant="outlined"
-            onClick={() =>
+            onClick={async () => {
+              const devices = await getDevices(token);
+              setDevice(
+                Object.values(devices.devices).filter(
+                  (device) => device.is_active
+                )[0]
+              );
               getCurrentlyPlaying(token)
-                .then((songData) => setSongPlaying(songData))
+                .then((songData) => {
+                  setSongPlaying(songData);
+                })
                 .catch((err) => {
                   console.log("error", err);
                   localStorage.clear();
                   navigate("/");
-                })
-            }
+                });
+            }}
           >
             Try Again
           </Button>
@@ -166,7 +184,7 @@ export default function Send() {
         autoHideDuration={6000}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         onClose={() => setSongSent(false)}
-        sx={{marginBottom: 10}}
+        sx={{ marginBottom: 10 }}
       >
         <Alert
           onClose={() => setSongSent(false)}

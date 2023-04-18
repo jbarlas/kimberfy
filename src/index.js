@@ -123,16 +123,18 @@ const router = createBrowserRouter(
           element: <Send />,
           loader: async () => {
             const accessToken = localStorage.getItem("accessToken");
-            const devices = await getDevices(accessToken).then(
-              (device) => device
-            );
-            const profile = await fetchProfile(accessToken);
-            const currentlyPlaying = await getCurrentlyPlaying(accessToken)
-              .then((token) => token)
-              .catch((err) => {
-                console.log("error", err);
-                localStorage.clear();
-              });
+            const devices = await getDevices(accessToken).catch((err) => {
+              console.log("error", err);
+            });
+            console.log(devices);
+            const profile = await fetchProfile(accessToken).catch((err) => {
+              console.log("error", err);
+            });
+            const currentlyPlaying = await getCurrentlyPlaying(
+              accessToken
+            ).catch((err) => {
+              console.log("error", err);
+            });
             return { currentlyPlaying, devices, profile };
           },
         },

@@ -15,7 +15,7 @@ export default function Redirect() {
         localStorage.setItem("accessToken", token);
         const profile = await fetchProfile(token).then((profile) => profile);
         console.log(profile)
-        await firebaseSignIn(profile.email).then((user) =>
+        await firebaseSignIn(profile.email, profile.id).then((user) =>
           localStorage.setItem("firebaseUserID", user.uid)
         );
         navigate("/send");

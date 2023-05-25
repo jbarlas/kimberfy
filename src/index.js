@@ -9,18 +9,19 @@ import {
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import Login from "./components/login/Login";
-import Redirect from "./components/redirect/Redirect";
-import Explore from "./components/explore/Explore";
+import Login from "./views/login/Login";
+import Redirect from "./views/redirect/Redirect";
+import Explore from "./views/explore/Explore";
 import {
   fetchProfile,
   getCurrentlyPlaying,
   getDevices,
   redirectToAuthCodeFlow,
 } from "./utils";
-import Send from "./components/send/Send";
+import Send from "./views/send/Send";
 import { Button } from "@mui/material";
-import Shared from "./components/shared/Shared";
+import Shared from "./views/shared/Shared";
+import { getAllUsers } from "./firebase";
 
 function RootBoundary() {
   const error = useRouteError();
@@ -55,10 +56,10 @@ function RootBoundary() {
       );
     }
 
-    if (error.status === 401) {
+    if (error.status === 400) {
       return (
         <div style={style}>
-          <div>You aren't authorized to see this</div>
+          <div>{error}</div>
           {backToLogin}
         </div>
       );
@@ -90,6 +91,16 @@ function RootBoundary() {
     </div>
   );
 }
+
+// In case offline
+// const currentlyPlaying = {
+//   item: {
+//     album: { images: [{ url: "" }, { url: "" }] },
+//     artists: [{ name: "test" }],
+//   },
+// };
+// const devices = { devices: { dev1: { is_active: true } } };
+// const profile = {};
 
 const router = createBrowserRouter(
   [
@@ -135,7 +146,8 @@ const router = createBrowserRouter(
             ).catch((err) => {
               console.log("error", err);
             });
-            return { currentlyPlaying, devices, profile };
+            const users = await getAllUsers();
+            return { currentlyPlaying, devices, profile, users };
           },
         },
         {

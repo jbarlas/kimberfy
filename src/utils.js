@@ -1,7 +1,8 @@
 import pkceChallenge from "pkce-challenge";
 
-// const dev = "http://localhost:3000"
-const prod = "https://kimberfy.web.app"
+
+const baseUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://kimberfy.web.app"
+console.log(baseUrl)
 
 export async function redirectToAuthCodeFlow(clientId) {
   const pkce = pkceChallenge(128);
@@ -13,7 +14,7 @@ export async function redirectToAuthCodeFlow(clientId) {
   const params = new URLSearchParams();
   params.append("client_id", clientId);
   params.append("response_type", "code");
-  params.append("redirect_uri", prod + "/redirect");
+  params.append("redirect_uri", baseUrl + "/redirect");
   params.append(
     "scope",
     "user-read-private user-read-email user-read-currently-playing user-read-playback-state user-modify-playback-state"
@@ -31,7 +32,7 @@ export async function getAccessToken(clientId, code) {
   params.append("client_id", clientId);
   params.append("grant_type", "authorization_code");
   params.append("code", code);
-  params.append("redirect_uri", prod + "/redirect");
+  params.append("redirect_uri", baseUrl + "/redirect");
   params.append("code_verifier", verifier);
 
   return await fetch("https://accounts.spotify.com/api/token", {
@@ -44,6 +45,12 @@ export async function getAccessToken(clientId, code) {
     .catch((e) => console.log("error", e));
 }
 
+/**
+ * Util function for gathering profile data from spotify api
+ * @param {*} token Authorization Bearer token for spotify api
+ * @returns profile object
+ * see https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile for more information
+ */
 export async function fetchProfile(token) {
   const result = await fetch("https://api.spotify.com/v1/me", {
     method: "GET",

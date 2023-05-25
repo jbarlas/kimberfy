@@ -7,7 +7,13 @@ import {
   getAuth,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { getDatabase, ref, update, set } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  push,
+  get,
+  child,
+} from "firebase/database";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -26,8 +32,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-export const firebaseSignIn = async (email, id) => {
-  return await signInWithEmailAndPassword(auth, email, id)
+export const firebaseSignIn = async (profile) => {
+  console.log("in firebase sign in ", profile);
+  return await signInWithEmailAndPassword(auth, profile.email, profile.id)
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
@@ -37,13 +44,16 @@ export const firebaseSignIn = async (email, id) => {
     .catch((error) => {
       console.log("error signing in to firebase", error);
       if (error.code === "auth/user-not-found") {
-        return createUserWithEmailAndPassword(auth, email, id)
+        return createUserWithEmailAndPassword(auth, profile.email, profile.id)
           .then((userCredential) => {
             const user = userCredential.user;
             console.log("new user created!", user);
-            set(ref(db, `users/${user.uid}/profile`), {
+            push(ref(db, `userData`), {
               uid: user.uid,
-              spotifyId: id,
+              spotifyId: profile.id,
+              displayName: profile.display_name,
+              email: profile.email,
+              images: profile.images,
             });
             return user;
           })
@@ -52,10 +62,26 @@ export const firebaseSignIn = async (email, id) => {
     });
 };
 
-export const sendSong = async (firebaseUser, song) => {
-  update(ref(db, `users/${firebaseUser}/sharing/${song.id}`), {
-    id: song.id,
-    name: song.name,
-    timeSent: Date.now()
+export const sendSong = async (to, from, song) => {
+  console.log(to, from, song)
+  push(ref(db, `userData/${from}/sharing/sent/${to}`), {
+    song: song.item,
+    timeSent: Date.now(),
   });
+  push(ref(db, `userData/${to}/sharing/received/${from}`), {
+    song: song.item,
+    timeSent: Date.now(),
+  });
+};
+
+export const getAllUsers = async () => {
+  return get(child(ref(db), "userData")).then((snapshot) => {
+    if (snapshot.exists()) {
+      return snapshot.val();
+    }
+  });
+};
+
+export const gatherSharedData = async () => {
+  
 };

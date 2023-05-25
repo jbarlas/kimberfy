@@ -13,14 +13,16 @@ export default function Redirect() {
     getAccessToken(CLIENT_ID, code)
       .then(async (token) => {
         localStorage.setItem("accessToken", token);
-        const profile = await fetchProfile(token).then((profile) => profile);
-        console.log(profile)
-        await firebaseSignIn(profile.email, profile.id).then((user) =>
+        const profile = await fetchProfile(token);
+        console.log(profile);
+        await firebaseSignIn(profile).then((user) =>
           localStorage.setItem("firebaseUserID", user.uid)
         );
         navigate("/send");
       })
-      .catch((e) => console.log("error", e));
+      .catch((e) => {
+        throw new Response("Error signing in", { status: 400, error: e });
+      });
   }, [navigate]);
 
   return (

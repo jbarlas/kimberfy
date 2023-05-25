@@ -1,17 +1,34 @@
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
-import Player from "../../player/Player";
-import { generateRecommendations, getCurrentlyPlaying } from "../../utils";
+// import Player from "../../components/player/Player";
+// import { generateRecommendations, getCurrentlyPlaying } from "../../utils";
 
 export default function Explore() {
-  const { devices, profile } = useLoaderData();
-  const token = localStorage.getItem("accessToken");
-  const [songs, setSongs] = React.useState([]);
-  const [recs, setRecs] = React.useState([]);
+  const { profile } = useLoaderData();
+  // const token = localStorage.getItem("accessToken");
+  // const [songs, setSongs] = React.useState([]);
+  // const [recs, setRecs] = React.useState([]);
 
-  console.log(devices, profile);
   return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100vw",
+          gap: "40px",
+        }}
+      >
+        <Typography variant="h4">Welcome, {profile.display_name}!</Typography>
+        <Typography variant="subtitle">
+          This page is still under construction sorry /:
+        </Typography>
+      </div>
+      {/* 
     <div
       style={{ display: "flex", flexDirection: "column", margin: "20px 10px" }}
     >
@@ -70,6 +87,7 @@ export default function Explore() {
             })}
         </div>
       </div>
-    </div>
+    </div> */}
+    </>
   );
 }

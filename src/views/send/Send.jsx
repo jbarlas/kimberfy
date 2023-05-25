@@ -4,10 +4,16 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardMedia,
+  Drawer,
+  Fab,
   IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Paper,
   Snackbar,
   Typography,
 } from "@mui/material";
@@ -20,20 +26,33 @@ import {
   playPlayback,
   previousPlayback,
 } from "../../utils";
-import { Pause, PlayArrow, SkipNext, SkipPrevious } from "@mui/icons-material";
+import {
+  Pause,
+  PlayArrow,
+  SendSharp,
+  SkipNext,
+  SkipPrevious,
+} from "@mui/icons-material";
 import { sendSong } from "../../firebase";
 
 export default function Send() {
-  const { currentlyPlaying, devices } = useLoaderData();
+  const { currentlyPlaying, devices, users } = useLoaderData();
   const token = localStorage.getItem("accessToken");
   const userId = localStorage.getItem("firebaseUserID");
+  const userList = Object.entries(users).filter(
+    (user) => user[1].uid !== userId
+  );
+  const userDataId = Object.entries(users).filter(
+    (user) => user[1].uid === userId
+  )[0][0];
   const [songPlaying, setSongPlaying] = React.useState(currentlyPlaying);
   const [device, setDevice] = React.useState(
     Object.values(devices.devices).filter((device) => device.is_active)[0]
   );
   const [songSent, setSongSent] = React.useState(false);
+  const [openShareSong, setOpenShareSong] = React.useState(false);
   const navigate = useNavigate();
-  console.log(songPlaying, device);
+  console.log(songPlaying, device, userList, userDataId);
 
   const pause = () => {
     pausePlayback(token, device.id).then(() =>
@@ -71,54 +90,60 @@ export default function Send() {
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh"
+        height: "100vh",
+        overflow: "hidden",
       }}
     >
       {songPlaying && device ? (
-        <Card sx={{ maxWidth: "300px" }}>
-          <CardMedia
-            component="img"
-            alt="album cover"
-            height="300"
-            width="300"
-            src={songPlaying.item.album.images[1].url}
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {songPlaying.item.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {songPlaying.item.artists.map((artist) => artist.name).join(", ")}
-            </Typography>
-          </CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 5,
-            }}
-          >
-            <IconButton aria-label="previous" onClick={() => previous()}>
-              <SkipPrevious />
-            </IconButton>
-            <IconButton
-              aria-label="play/pause"
-              onClick={() => (songPlaying.is_playing ? pause() : play())}
+        <>
+          <Card sx={{ maxWidth: "300px" }}>
+            <CardMedia
+              component="img"
+              alt="album cover"
+              height="300"
+              width="300"
+              src={songPlaying.item.album.images[1].url}
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {songPlaying.item.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {songPlaying.item.artists
+                  .map((artist) => artist.name)
+                  .join(", ")}
+              </Typography>
+            </CardContent>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 5,
+                paddingBottom: "20px",
+              }}
             >
-              {songPlaying.is_playing ? (
-                <Pause sx={{ height: 38, width: 38 }} />
-              ) : (
-                <PlayArrow sx={{ height: 38, width: 38 }} />
-              )}
-            </IconButton>
-            <IconButton aria-label="next" onClick={() => next()}>
-              <SkipNext />
-            </IconButton>
-          </Box>
-          <CardActions
+              <IconButton aria-label="previous" onClick={() => previous()}>
+                <SkipPrevious />
+              </IconButton>
+              <IconButton
+                aria-label="play/pause"
+                onClick={() => (songPlaying.is_playing ? pause() : play())}
+              >
+                {songPlaying.is_playing ? (
+                  <Pause sx={{ height: 38, width: 38 }} />
+                ) : (
+                  <PlayArrow sx={{ height: 38, width: 38 }} />
+                )}
+              </IconButton>
+              <IconButton aria-label="next" onClick={() => next()}>
+                <SkipNext />
+              </IconButton>
+            </Box>
+            {/* <CardActions
             sx={{ margin: 1, justifyContent: "center", alignItems: "center" }}
           >
             <Button
@@ -132,8 +157,42 @@ export default function Send() {
             >
               Send
             </Button>
-          </CardActions>
-        </Card>
+          </CardActions> */}
+          </Card>
+          <Fab
+            onClick={() => setOpenShareSong(true)}
+            sx={{ position: "absolute", right: "30px", bottom: "88px" }}
+            color="success"
+          >
+            <SendSharp />
+          </Fab>
+          <Drawer
+            anchor="bottom"
+            open={openShareSong}
+            onClose={() => setOpenShareSong(false)}
+          >
+            <div style={{ maxHeight: "300px" }}>
+              <Paper sx={{ width: "100%", padding: "0 0 16px" }}>
+                <List>
+                  {userList.map((user) => (
+                    <ListItem key={user[1].uid} sx={{ padding: 0 }}>
+                      <ListItemButton
+                        onClick={() => {
+                          setOpenShareSong(false);
+                          sendSong(user[0], userDataId, songPlaying).then(
+                            setSongSent(true)
+                          );
+                        }}
+                      >
+                        <ListItemText primary={user[1].displayName} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            </div>
+          </Drawer>
+        </>
       ) : (
         <div
           style={{

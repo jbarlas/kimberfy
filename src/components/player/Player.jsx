@@ -14,7 +14,7 @@ import {
   PlayArrow,
   QuestionMark,
 } from "@mui/icons-material";
-import { pausePlayback } from "../utils";
+import { pausePlayback } from "../../utils";
 
 export default function Player(props) {
   const token = localStorage.getItem("accessToken");
